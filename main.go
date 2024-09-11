@@ -1,9 +1,10 @@
 package main //package needed
 
 import (
-	"fmt"     //needed for print functions
-	"strings" //needed to split strings and other string fucntions
 	"booking-app/helper" //import by using module name and then package name (path)
+	"fmt"                //needed for print functions
+	// "strconv" //needed for converting numbers to string
+	// "strings" //needed to split strings and other string fucntions
 )
 
 //pacakge level variables
@@ -14,8 +15,16 @@ const conferenceTickets uint = 50 //constant variable
 var remainingTickets uint = 50
 
 // var names = [50]string{"Brandyn", "Aylah", "Luka"} //array
-var bookings []string //slice (a dynmaically growing array i.e. list in Java)
+// var bookings = make([]map[string]string, 0) //slice (a dynmaically growing array i.e. list in Java) //list of maps
+var bookings = make([]UserData, 0) //create a list of UserData structs (i.e. java classes)
 // var bookings2 = []string{} alt way of defining an array
+
+type UserData struct {
+	firstName string
+	lastName string
+	email string
+	numberofTickets uint
+}
 
 var userName string //type has to be defined if nothing is assigned at declaration
 
@@ -26,8 +35,6 @@ func main() {
 	for remainingTickets > 0 { //for can handle boolean expression
 
 		firstName, lastName, email, userTickets := getUserInfo()
-
-		fmt.Printf("The size of bookings array is %v\n", len(bookings))
 
 		fmt.Printf("Pointer value of userName is %p\n", &userName)
 
@@ -62,6 +69,8 @@ func main() {
 
 		}
 
+		fmt.Printf("The size of bookings array is %v\n\n", len(bookings))
+
 	}
 
 }
@@ -79,8 +88,8 @@ func getFirstNames() []string {
 	firstNames := []string{} // alt way of defining a slice
 
 	for _, bookings := range bookings { //for each loop. Get index of slice using range. User underscore to replace index that we are not using
-		var names = strings.Fields(bookings)
-		firstNames = append(firstNames, names[0])
+		
+		firstNames = append(firstNames, bookings.firstName) //add first name from struct
 	}
 
 	return firstNames
@@ -88,9 +97,9 @@ func getFirstNames() []string {
 }
 
 
-func getUserInfo() (string, string, string, int) {
+func getUserInfo() (string, string, string, uint) {
 
-	var userTickets int
+	var userTickets uint
 	var firstName string
 	var lastName string
 	var email string
@@ -107,8 +116,26 @@ func getUserInfo() (string, string, string, int) {
 	return firstName, lastName, email, userTickets
 }
 
-func bookTicket(firstName string, lastName string, email string, userTickets int) {
-	bookings = append(bookings, firstName+" "+lastName) // add element to slice
+func bookTicket(firstName string, lastName string, email string, userTickets uint) {
+
+	var user = UserData {
+		firstName: firstName,
+		lastName: lastName,
+		email: email,
+		numberofTickets: userTickets,
+	}
+
+	//add data to map 
+
+	// var user = make(map[string]string)
+	// user["firstName"] = firstName
+	// user["lastName"] = lastName
+	// user["email"] = email
+	// user["userTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+
+	bookings = append(bookings, user) // add element to slice
+
+	fmt.Printf("List of bookings is %v\n", bookings)
 
 	remainingTickets -= uint(userTickets) //type cast due to different type calculation
 	fmt.Printf("Thank you %v %v for booking %v tickets. You will recieve a confirmation email at %v shortly!\n\n", firstName, lastName, userTickets, email)
