@@ -3,8 +3,10 @@ package main //package needed
 import (
 	"booking-app/helper" //import by using module name and then package name (path)
 	"fmt"                //needed for print functions
+	"time" //for using time methods
 	// "strconv" //needed for converting numbers to string
 	// "strings" //needed to split strings and other string fucntions
+	"sync"
 )
 
 //pacakge level variables
@@ -28,6 +30,8 @@ type UserData struct {
 
 var userName string //type has to be defined if nothing is assigned at declaration
 
+var wg = sync.WaitGroup{} //variable for making main routine wait for go routines
+
 func main() {
 
 	greetUsers()
@@ -45,6 +49,8 @@ func main() {
 		if isValidName && isValidEmailAddress && isUserTicketsValid {
 
 			bookTicket(firstName, lastName, email, userTickets)
+			wg.Add(1) //add only 1 go rountine to wait for (increases counter)
+			go sendTIcket(userTickets, firstName, lastName, email) //makes method run concurrently (creates a new thread for every method called)
 
 			firstNames := getFirstNames()
 			fmt.Printf("The following people have booked: %v\n\n", firstNames)
@@ -70,6 +76,7 @@ func main() {
 		}
 
 		fmt.Printf("The size of bookings array is %v\n\n", len(bookings))
+		wg.Wait()
 
 	}
 
@@ -140,5 +147,16 @@ func bookTicket(firstName string, lastName string, email string, userTickets uin
 	remainingTickets -= uint(userTickets) //type cast due to different type calculation
 	fmt.Printf("Thank you %v %v for booking %v tickets. You will recieve a confirmation email at %v shortly!\n\n", firstName, lastName, userTickets, email)
 	fmt.Printf("There are %v tickets remaining\n", remainingTickets)
+}
+
+
+func sendTIcket(userTickets uint, firstName string, lastName string, email string) {
+	var ticket = fmt.Sprintf("%v tickets for %v %v ", userTickets, firstName, lastName) //Allows to save string in a variable
+	fmt.Println("*******************")
+	fmt.Printf("Sending ticket:\n%v \nto email address %v\n", ticket, email)
+	fmt.Println("*******************")
+
+	time.Sleep(10 * time.Second) //Pause thread for 10 seconds
+	wg.Done() //decrements go routine counter
 }
 
