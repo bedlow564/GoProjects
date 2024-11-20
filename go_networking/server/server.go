@@ -51,6 +51,7 @@ func handler(w http.ResponseWriter, r *http.Request) { //writes Hello world and 
 
 		var item todo
 
+		//json decoder than code read in json and parse in into a type
 		if err = json.NewDecoder(resp.Body).Decode(&item); err != nil {
 			http.Error(w, err.Error(), http.StatusServiceUnavailable)
 			return
