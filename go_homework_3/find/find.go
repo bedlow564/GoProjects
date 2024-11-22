@@ -19,7 +19,7 @@ import (
 //}
 
 type xkcd struct {
-	Num        int    `json: "num"`
+	Num        int    `json:"num"`
 	Day        string `json:"day"`
 	Month      string `json:"month"`
 	Year       string `json:"year"`
@@ -41,10 +41,10 @@ func main() {
 	}
 
 	var (
-		items []xkcd //slice of comics json objs
-		terms []string
+		items []xkcd        //slice of comics json objs
+		terms []string      //slice of terms to search for
 		input io.ReadCloser //reader for file
-		cnt   int
+		cnt   int           //cnt of comics found by search
 		err   error
 	)
 
@@ -54,9 +54,8 @@ func main() {
 	}
 
 	//decode file
-	err = json.NewDecoder(input).Decode(&items) //decode json and put result into items pointer (points to slice of json structs)
 
-	if input, err = os.Open(fn); err != nil {
+	if err = json.NewDecoder(input).Decode(&items); err != nil { //decode json and put result into items pointer (points to slice of json structs)
 		fmt.Fprintf(os.Stderr, "problem decoding json: %s\n", err)
 		os.Exit(-1)
 	}
@@ -76,16 +75,16 @@ outer:
 
 		for _, term := range terms {
 			//check if json fields contain search term
-			if !strings.Contains(title, term) || !strings.Contains(transcript, term) {
+			if !strings.Contains(title, term) && !strings.Contains(transcript, term) {
 				continue outer //break out of loop and continue "outer" loop
 			}
 
 		}
 
-		fmt.Printf("https://xkcd.com/%d/ %s/%s/%s/ %q\n", item.Num, item.Month, item.Day, item.Year, item.Title)
+		fmt.Printf("https://xkcd.com/%d/ %s/%s/%s/ %q\n", item.Num, item.Month, item.Day, item.Year, item.Title) //print comic url of comic, date, and title if found
 		cnt++
 	}
 
-	fmt.Fprintf(os.Stderr, "Found %d comics\n", cnt)
+	fmt.Fprintf(os.Stderr, "Found %d comics\n", cnt) //print num of comics found by search
 
 }
