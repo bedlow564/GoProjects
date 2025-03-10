@@ -45,6 +45,7 @@ func first(ctx context.Context, urls []string) (*result, error) {
 	//buffer provides space on a channel so that if channel is return data can still be written to it
 	ctx, cancel := context.WithCancel(ctx)
 
+	//closes all other channels and releaes resources
 	defer cancel() // closes context channel (in this case after the first request has been received)
 
 	for _, url := range urls {
@@ -53,8 +54,8 @@ func first(ctx context.Context, urls []string) (*result, error) {
 
 	select {
 	case r := <-result: //get normal result back
-		return &r, nil
-	case <-ctx.Done(): //handle case of context finishing before result is given
+		return &r, nil //initate cancel() method
+	case <-ctx.Done(): //handle case of context finishing before result is given since this context is given from above
 		return nil, ctx.Err()
 	}
 

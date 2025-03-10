@@ -16,7 +16,7 @@ type result struct {
 // ctx should always be first parameter
 func get(ctx context.Context, url string, ch chan<- result) {
 	start := time.Now()
-
+	//Allows to create a new request with context on the same line
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil) //set up https request with a context (3s timeout)
 
 	//injects 3 second timeout to http get request
@@ -40,8 +40,11 @@ func main() {
 		"https://localhost:8080",
 	}
 
+	//contex.backgroung gives a empty parent context
+	//context.withDeadline allows to stop at certain time of day
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
+	//cancel all the other queries after context is finished
 	defer cancel()
 
 	for _, url := range list {
