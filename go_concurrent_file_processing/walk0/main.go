@@ -39,6 +39,7 @@ func searchTree(dir string) (results, error) {
 	hashes := make(results) //create a map of result types
 
 	//walk does a walk of the given directory
+	//create clousre for WalkFunc
 	err := filepath.Walk(dir, func(p string, fi os.FileInfo, err error) error {
 
 		//ignore files that are empty because they all have the same hash //check for regular files
@@ -57,4 +58,19 @@ func searchTree(dir string) (results, error) {
 
 func main() {
 
+	if len(os.Args) < 2 { //provide dir name
+		log.Fatal("Missing parameter, provide dir name!")
+	}
+	if hashes, err := searchTree(os.Args[1]); err == nil { //search given directory
+		for hash, files := range hashes { //loop through map of files to hashes
+			if len(files) > 1 {
+				//we will use just 7 chars like git
+				fmt.Println(hash[len(hash)-7:], len(files)) //print first 7 chars of hash and number of files
+
+				for _, file := range files { //print all files that the have same hash
+					fmt.Println(" ", file)
+				}
+			}
+		}
+	}
 }
