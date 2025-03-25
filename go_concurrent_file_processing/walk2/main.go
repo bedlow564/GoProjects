@@ -42,7 +42,7 @@ func processFiles(paths <-chan string, pairs chan<- pair, done chan<- bool) {
 		pairs <- hashFile(path)
 	}
 	//NOTE: This channel will block until something is written to paths channel
-	done <- true
+	done <- true //write to done channel when there are no more paths
 }
 
 func collectHashes(pair <-chan pair, result chan<- results) {
